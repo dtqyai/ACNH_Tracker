@@ -21,3 +21,7 @@ coverage/
 .claude/
 .vscode/
 .workbuddy/
+
+# Keep Markdown documents local, except README files (case-insensitive)
+*.[mM][dD]
+![rR][eE][aA][dD][mM][eE].[mM][dD]
