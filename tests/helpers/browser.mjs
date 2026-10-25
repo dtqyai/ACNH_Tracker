@@ -69,7 +69,9 @@ export async function launchBrowser(root) {
   function send(method, params = {}, sessionId) {
     return new Promise((resolve, reject) => {
       const id = ++nextId;
-      const timer = setTimeout(() => { pending.delete(id); reject(new Error('CDP timeout: ' + method + '\n' + stderr)); }, 10000);
+      // The first target also waits for Chrome to finish starting on CI.
+      const timeoutMs = method === 'Target.createTarget' ? 30000 : 10000;
+      const timer = setTimeout(() => { pending.delete(id); reject(new Error('CDP timeout: ' + method + '\n' + stderr)); }, timeoutMs);
       pending.set(id, { resolve, reject, timer });
       child.stdio[3].write(JSON.stringify({ id, method, params, sessionId }) + '\0');
     });
