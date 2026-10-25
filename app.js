@@ -4,12 +4,12 @@ import { escapeHtml, showToast } from './ui.js';
 import { createCollectionController } from './collection.js';
 import { createBackupActions } from './backup.js';
 import { createListView } from './list-view.js';
+import { createTodayRows } from './today-view.js';
 import {
   applyFilters,
   createSafeStorage,
   getCollectionAccess,
   getFilterOptions,
-  getTimeRangeLabel,
   makeFilters,
   normalizeUIState
 } from './core.js';
@@ -53,15 +53,17 @@ function handleHemisphereChange(hemi){
   const focusRoot = document.activeElement?.closest('#todayPanel')
     ? '#todayPanel'
     : document.activeElement?.closest('#filterBar') ? '#filterBar' : null;
-  if (!saveHemisphere(hemi)) return;
   state.hemisphere = hemi;
+  const saved = saveHemisphere(hemi);
   renderAll();
   if (focusRoot) document.querySelector(focusRoot+' [data-hemi="'+hemi+'"]')?.focus();
   const remaining = filteredItems(state.activeTab).length;
   const label = state.hemisphere === 'north' ? '北半球' : '南半球';
-  showToast(remaining === 0
-    ? '已切换到' + label + '，当前筛选条件下没有匹配的生物，可尝试重置筛选'
-    : '已切换到' + label + '，当前筛选命中 ' + remaining + ' 条');
+  showToast(!saved
+    ? '已切换到' + label + '，设置未保存，刷新后可能恢复原设置'
+    : remaining === 0
+      ? '已切换到' + label + '，当前筛选条件下没有匹配的生物，可尝试重置筛选'
+      : '已切换到' + label + '，当前筛选命中 ' + remaining + ' 条');
 }
 
 function hemisphereButtons(activeClass){
@@ -108,6 +110,11 @@ const collection = createCollectionController({
   onError(message) { showToast(message, { duration: 6000 }); }
 });
 const backup = createBackupActions(collection, KNOWN_IDS);
+const todayRows = createTodayRows(collection);
+document.getElementById('todayPanel').addEventListener('change', event => {
+  const input = event.target.closest('.today-checkbox');
+  if (input) collection.set([input.dataset.collectionId], input.checked);
+});
 window.addEventListener('storage', event => {
   if (event.storageArea === nativeStorage && (event.key === CONFIG.STORAGE_KEYS.collected || event.key === null)) {
     collection.refresh();
@@ -164,7 +171,6 @@ function renderCollectionViews() {
 
 function saveHemisphere(next) {
   const result = storage.setItem(CONFIG.STORAGE_KEYS.hemisphere, next);
-  if (!result.ok) showStorageWarning();
   return result.ok;
 }
 
@@ -188,7 +194,7 @@ function filteredItems(tab) {
 
 function renderNavTabs() {
   document.getElementById('navTabs').innerHTML = CONFIG.TABS.map(t =>
-    '<button type="button" class="nav-tab' + (state.activeTab===t?' active':'') + '" data-tab="'+t+'" aria-pressed="'+(state.activeTab===t)+'">' + '<span class="nav-index" aria-hidden="true">0'+(CONFIG.TABS.indexOf(t)+1)+'</span><span>'+TAB_NAMES[t]+'</span></button>'
+    '<button type="button" class="nav-tab' + (state.activeTab===t?' active':'') + '" data-tab="'+t+'" aria-pressed="'+(state.activeTab===t)+'">' + '<span>'+TAB_NAMES[t]+'</span></button>'
   ).join('');
 }
 
@@ -224,7 +230,8 @@ function renderTodayPanel() {
   const hour = now.getHours();
   const monStr = now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
 
-  let nowAvailable = ALL_DATA.filter(x => TAB_DEFINITIONS[x.type].seasonal && isAvailableNow(x.item, now));
+  const available = ALL_DATA.filter(x => TAB_DEFINITIONS[x.type].seasonal && isAvailableNow(x.item, now));
+  let nowAvailable = available;
   if (state.todayUncollectedOnly) {
     nowAvailable = nowAvailable.filter(x => !state.collected.has(x.item.id));
   }
@@ -233,18 +240,7 @@ function renderTodayPanel() {
     nowAvailable.filter(entry => entry.type === type)
   ]));
 
-  function todayRow(item, tags){
-    const timeLabel = getTimeRangeLabel(hoursForMonth(item, state.hemisphere, now.getMonth() + 1));
-    const note = item.note ? '<span class="note">'+escapeHtml(item.note)+'</span>' : '';
-    return '<div class="today-item"><span style="font-weight:600;min-width:80px">'
-      + escapeHtml(item.name) + '</span>' + tags + note
-      + '<span style="font-size:12px;color:var(--color-text-muted)">' + timeLabel + '</span>'
-      + '<span style="color:var(--color-accent-warm);font-weight:600;margin-left:auto">'
-      + item.price + ' 铃钱</span></div>';
-  }
-
-  // Collection and clock updates replace only the non-interactive result rows.
-  // Keeping the controls connected preserves clicks and keyboard focus.
+  // Keep controls and result rows connected during saves and cross-page updates.
   if (!panel.firstElementChild) {
     let html = '<button type="button" class="today-header" id="todayHeader" aria-controls="todayBody"><span class="today-heading"><span class="arrow" aria-hidden="true">▶</span> 今日可捕捉 <span class="today-date"></span></span><span class="today-count"></span></button>';
     html += '<div class="today-body" id="todayBody"><div class="today-info"><span>当前半球：</span>'+hemisphereButtons('hemi-btn')
@@ -278,7 +274,9 @@ function renderTodayPanel() {
   header.classList.toggle('open', state.todayOpen);
   header.setAttribute('aria-expanded', state.todayOpen);
   panel.querySelector('.today-date').textContent = monStr+' · '+hour+'时';
-  panel.querySelector('.today-count').textContent = nowAvailable.length+' 种生物可捕捉';
+  panel.querySelector('.today-count').textContent = state.todayUncollectedOnly
+    ? '未收集 ' + nowAvailable.length + ' 种'
+    : nowAvailable.length + ' 种生物可捕捉';
   const body = document.getElementById('todayBody');
   body.classList.toggle('open', state.todayOpen);
   body.hidden = !state.todayOpen;
@@ -298,15 +296,14 @@ function renderTodayPanel() {
     const groupBody = document.getElementById('todayGroup-'+t);
     groupBody.classList.toggle('open', open);
     groupBody.hidden = !open;
-    groupBody.innerHTML = items.length === 0
-      ? '<div class="today-item" style="color:var(--color-text-muted)">当前时间没有可捕捉的'+TAB_NAMES[t]+'</div>'
-      : items.map(({ item }) => {
-        let tags = '';
-        if (t !== 'sea') tags += '<span class="tag tag-location">'+escapeHtml(item.location)+'</span>';
-        if (item.shadowSize) tags += '<span class="tag tag-shadow">'+escapeHtml(item.shadowSize)+'</span>';
-        if (item.weather && item.weather !== '无限制') tags += '<span class="tag tag-weather">'+escapeHtml(item.weather)+'</span>';
-        return todayRow(item, tags);
-      }).join('');
+    const allCollected = state.todayUncollectedOnly && available.some(entry => entry.type === t);
+    todayRows.render(groupBody, items.map(entry => entry.item), {
+      hemisphere: state.hemisphere, month: now.getMonth() + 1,
+      emptyText: allCollected
+        ? '当前可捕捉的' + TAB_NAMES[t] + '均已收集'
+        : '当前时间没有可捕捉的' + TAB_NAMES[t],
+      fallback: groupHeader
+    });
   }
 }
 
@@ -323,7 +320,8 @@ function filterSummary() {
   if (TAB_DEFINITIONS[state.activeTab].seasonal) {
     parts.push(state.hemisphere === 'north' ? '北半球' : '南半球');
     if (f.month != null) parts.push(f.month + '月');
-    parts.push(f.hour == null ? '任意时段' : f.hour === 'all' ? '全天出现' : f.hour + '时');
+    parts.push(!f.hourManual ? '当前时间 · ' + f.hour + '时'
+      : f.hour == null ? '任意时段' : f.hour === 'all' ? '全天出现' : '固定 ' + f.hour + '时');
   }
   if (f.status && f.status !== 'all') parts.push(CONFIG.STATUS_OPTS.find(([value]) => value === f.status)[1]);
   const selected = TAB_DEFINITIONS[state.activeTab].filters.flatMap(key => f[key]);
@@ -398,17 +396,13 @@ function renderFilters() {
     }
     html += '</div></div>';
 
-    // The hour row has three non-numeric states, and they are not the same
-    // thing: 不限 = no hour filtering at all; 全天出现 = only creatures whose
-    // hours cover all 24; and the unmarked default = follow the clock. Hiding
-    // "clear" behind a re-tap of the active hour chip (the old behaviour)
-    // made none of that discoverable, so 不限 is now an explicit chip.
     html += '<div class="filter-row"><span class="filter-label">出现时间</span><div class="filter-options" id="hourGrid">';
     const curHr = getLocalTime().getHours();
+    html += '<button type="button" class="filter-btn'+(!f.hourManual?' active':'')+'" data-filter="hour" data-value="now" aria-pressed="'+(!f.hourManual)+'">当前时间</button>';
     html += '<button type="button" class="filter-btn'+(f.hour===null?' active':'')+'" data-filter="hour" data-value="none" aria-pressed="'+(f.hour===null)+'">不限</button>';
     html += '<button type="button" class="filter-btn'+(f.hour==='all'?' active':'')+'" data-filter="hour" data-value="all" aria-pressed="'+(f.hour==='all')+'">全天出现</button>';
     for (let h = 0; h < CONFIG.HOURS; h++) {
-      html += '<button type="button" class="filter-btn'+(f.hour===h?' active':'')+(h===curHr?' is-now':'')+'" data-filter="hour" data-value="'+h+'" aria-pressed="'+(f.hour===h)+'">'+h+'</button>';
+      html += '<button type="button" class="filter-btn'+(f.hourManual&&f.hour===h?' active':'')+(h===curHr?' is-now':'')+'" data-filter="hour" data-value="'+h+'" aria-pressed="'+(f.hourManual&&f.hour===h)+'">'+h+'</button>';
     }
     html += '</div></div>';
 
@@ -439,14 +433,15 @@ function syncFilterChips() {
     else if (Array.isArray(f[filter])) active = f[filter].includes(value);
     else if (filter === 'month') active = f.month === parseInt(value);
     else if (filter === 'hour') {
-      active = f.hour === (value === 'all' ? 'all' : value === 'none' ? null : parseInt(value));
+      active = value === 'now' ? !f.hourManual
+        : f.hourManual && f.hour === (value === 'all' ? 'all' : value === 'none' ? null : parseInt(value));
     }
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-pressed', active);
     if (filter === 'month') {
       btn.classList.toggle('is-now', parseInt(value) === curMon);
     } else if (filter === 'hour') {
-      btn.classList.toggle('is-now', value !== 'all' && value !== 'none' && parseInt(value) === curHr);
+      btn.classList.toggle('is-now', value !== 'now' && value !== 'all' && value !== 'none' && parseInt(value) === curHr);
     }
   });
 }
@@ -498,17 +493,16 @@ document.getElementById('filterBar').addEventListener('click', e => {
   } else if (filter === 'month') {
     state.filters[tab].month = state.filters[tab].month === parseInt(value) ? null : parseInt(value);
   } else if (filter === 'hour') {
-    // Any manual hour choice (including 不限 and 全天出现) marks the filter
-    // as user-owned so the hourly tick won't clobber it. 不限 is "no hour
-    // filter", which is itself a choice, not a request to follow the clock
-    // again. Only 重置全部 hands control back to the clock.
-    state.filters[tab].hourManual = true;
-    if (value === 'none') {
+    const wasManual = state.filters[tab].hourManual;
+    state.filters[tab].hourManual = value !== 'now';
+    if (value === 'now') {
+      state.filters[tab].hour = getLocalTime().getHours();
+    } else if (value === 'none') {
       state.filters[tab].hour = null;
     } else if (value === 'all') {
       state.filters[tab].hour = state.filters[tab].hour === 'all' ? null : 'all';
     } else {
-      state.filters[tab].hour = state.filters[tab].hour === parseInt(value) ? null : parseInt(value);
+      state.filters[tab].hour = wasManual && state.filters[tab].hour === parseInt(value) ? null : parseInt(value);
     }
   }
   saveUIState();
@@ -649,8 +643,8 @@ function onClockChange() {
   const hour = getLocalTime().getHours();
   renderTodayPanel();
   // Follow the clock with the hour filter, but only until the user picks an
-  // hour themselves (hourManual; 不限 counts as a pick too). 重置全部 is what
-  // hands control back to the clock. Every tab follows, otherwise switching
+  // hour themselves (hourManual; 不限 counts as a pick too). 当前时间 and
+  // 重置全部 restore automatic following. Every tab follows, otherwise switching
   // tabs surfaces a stale hour from whenever that tab was last active.
   for (const tab of CREATURE_TABS) {
     if (!state.filters[tab].hourManual) state.filters[tab].hour = hour;

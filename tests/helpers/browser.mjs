@@ -116,7 +116,8 @@ export async function launchBrowser(root) {
       const keys = { Tab: ['Tab', 9], Enter: ['Enter', 13], Space: [' ', 32], Escape: ['Escape', 27] };
       const [value, code] = keys[key];
       const params = {key: value, code: key, windowsVirtualKeyCode: code, nativeVirtualKeyCode: code, modifiers,
-        ...(key === 'Enter' ? {text:'\r', unmodifiedText:'\r'} : {})};
+        ...(key === 'Enter' ? {text:'\r', unmodifiedText:'\r'}
+          : key === 'Space' ? {text:' ', unmodifiedText:' '} : {})};
       await send('Input.dispatchKeyEvent', { type: 'keyDown', ...params }, sessionId);
       await send('Input.dispatchKeyEvent', { type: 'keyUp', ...params }, sessionId);
     }

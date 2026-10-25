@@ -113,7 +113,7 @@ export function createListView({ state, filteredItems, isLoadFailed, sortKeys, i
 
     const rows = document.getElementById('listRows');
     if (filtered.length === 0) {
-      rows.innerHTML = '<div class="empty-state">没有符合条件的条目，请调整筛选条件 🔍</div>';
+      rows.innerHTML = '<div class="empty-state">没有符合条件的条目，请调整筛选条件</div>';
       if (focusedSort) document.querySelector('.sort-btn[data-sort="'+focusedSort+'"]')?.focus();
       else if (focusedAction) {
         const action = document.getElementById(focusedAction);

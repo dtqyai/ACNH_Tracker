@@ -17,7 +17,7 @@ button:disabled,button[aria-disabled=true]{cursor:not-allowed;opacity:.5}
 button,a,summary{ -webkit-tap-highlight-color:transparent}
 button:active:not(:focus-visible):not(:disabled){transform:scale(.97)}
 
-button:focus-visible,a:focus-visible,summary:focus-visible,.creature-item:focus-within{outline:2px solid var(--color-accent-warm);outline-offset:3px}
+button:focus-visible,a:focus-visible,summary:focus-visible,.creature-item:focus-within,.today-item:focus-within{outline:2px solid var(--color-accent-warm);outline-offset:3px}
 
 [hidden]{display:none!important}
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
@@ -30,17 +30,14 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.creature-item:focus-
 .nav-left{display:flex;flex-direction:column;gap:14px}
 .brand-icon{width:42px;height:42px;object-fit:contain}
 .nav-title{font-size:18px;font-weight:750;letter-spacing:-.4px}
-.nav-caption{font-size:11px;letter-spacing:2px;color:var(--color-text-muted);margin-top:3px}
 .nav-tabs{display:flex;flex-direction:column;gap:8px;margin-top:48px}
 .nav-tab{display:flex;align-items:center;gap:14px;min-height:52px;padding:10px 14px;border:0;border-radius:6px;background:transparent;color:var(--color-text-muted);text-align:left;font-weight:600}
 .nav-tab.active{background:var(--color-primary);color:#fffef9}
-.nav-index{font-size:11px;opacity:.7}
 .nav-footer{margin-top:auto;padding-top:28px;font-size:12px;color:var(--color-text-muted)}
 
 .main{max-width:1440px;margin-left:216px;padding:42px 48px 80px}
 .page-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:16px}
 .page-heading h1{font-family:var(--font-body);font-size:32px;font-weight:700;line-height:1.3}
-.page-kicker{font-size:11px;letter-spacing:2px;color:var(--color-text-muted);margin-bottom:8px}
 
 .progress-section{padding:24px 0;border-top:1px solid var(--color-text);border-bottom:1px solid var(--color-border);display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-bottom:16px}
 .progress-text{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
@@ -75,7 +72,11 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.creature-item:focus-
 .today-group-header{display:flex;align-items:center;gap:8px;min-height:40px;border:0;background:transparent;color:var(--color-primary);font-size:13px;font-weight:600}
 .today-group-body{display:none}
 .today-group-body.open{display:block}
-.today-item{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;padding:8px 0;border-bottom:1px solid #d9e0d1}
+.today-name{font-weight:600;min-width:80px;cursor:pointer}
+.today-hours{font-size:12px;color:var(--color-text-muted)}
+.today-price{color:var(--color-accent-warm);font-weight:600;margin-left:auto;white-space:nowrap}
+.today-empty{font-size:13px;padding:8px 0;color:var(--color-text-muted)}
+.today-item{position:relative;display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;padding:8px 0;border-bottom:1px solid #d9e0d1}
 
 .filter-bar{margin-bottom:24px;border-bottom:1px solid var(--color-border)}
 .filter-toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;padding:8px 0;border:0;background:transparent;color:var(--color-text);font-weight:600;text-align:left}
@@ -111,8 +112,8 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.creature-item:focus-
 .creature-thumbnail>label,.art-thumbnail-frame>label{display:flex;width:100%;height:100%;cursor:pointer}
 .check-box{width:24px;height:24px;border:1.5px solid #a9b4a1;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .check-box::after{content:'✓';font-size:14px;color:white;opacity:0}
-.creature-item.collected .check-box{background:var(--color-collected);border-color:var(--color-collected)}
-.creature-item.collected .check-box::after{opacity:1}
+.creature-item.collected .check-box,.today-item.collected .check-box{background:var(--color-collected);border-color:var(--color-collected)}
+.creature-item.collected .check-box::after,.today-item.collected .check-box::after{opacity:1}
 .creature-item.collected{background:#f0f3e9}
 .creature-item.collected .creature-name{color:#627b63}
 .creature-thumbnail{grid-column:2;grid-row:1/3;width:72px;height:72px;display:flex;align-items:center;justify-content:center;background:#f0f1e8;border-radius:8px}
@@ -209,13 +210,11 @@ button:focus-visible,a:focus-visible,summary:focus-visible,.creature-item:focus-
 .nav-left{flex-direction:row;align-items:center;gap:10px}
 .brand-icon{width:28px;height:28px}
 .nav-title{font-size:15px}
-.nav-caption,.nav-footer{display:none}
+.nav-footer{display:none}
 .nav-tabs{flex-direction:row;flex-wrap:wrap;margin:0;gap:4px}
 .nav-tab{flex:1 1 calc((100% - 8px)/3);justify-content:center;padding:6px 4px;min-height:40px;border-radius:6px 6px 0 0;font-size:13px;gap:6px}
-.nav-index{display:none}
 .main{margin:0;padding:14px 20px 48px}
 .page-heading{margin-bottom:12px;gap:12px}
-.page-kicker{display:none}
 .page-heading h1{font-size:27px}
 .progress-section{gap:20px;padding:12px 0;margin-bottom:12px}
 .progress-text{flex-direction:row;gap:6px;margin-bottom:6px;flex-wrap:wrap}
@@ -280,14 +279,14 @@ button:active:not(:focus-visible):not(:disabled){transform:none}
 <nav class="navbar" aria-label="收集类别">
   <div class="nav-left">
     <img class="brand-icon" src="favicon.png" alt="" width="42" height="42">
-    <div><span class="nav-title">ACNH Tracker</span><div class="nav-caption" lang="en">ISLAND FIELD NOTES</div></div>
+    <span class="nav-title">ACNH Tracker</span>
   </div>
   <div class="nav-tabs" id="navTabs" role="group" aria-label="选择收集类别"></div>
-  <div class="nav-footer">集合啦！动物森友会<br>我的岛屿收集手册</div>
+  <div class="nav-footer">集合啦！动物森友会</div>
 </nav>
 
 <main class="main" id="main-content" tabindex="-1">
-  <header class="page-heading"><div><p class="page-kicker" lang="en">MY COLLECTION</p><h1 id="collectionTitle">我的图鉴</h1></div><div class="data-bar" id="dataBar"></div></header>
+  <header class="page-heading"><h1 id="collectionTitle">我的图鉴</h1><div class="data-bar" id="dataBar"></div></header>
   <div class="progress-section" id="progressSection" aria-live="polite"></div>
   <div class="today-panel" id="todayPanel"></div>
   <div class="filter-bar" id="filterBar"></div>

@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import vm from 'node:vm';
 
-import { parseModule, validateImportBindings } from '../scripts/module-parser.mjs';
+import { buildBrowserBundle } from '../scripts/browser-bundle.mjs';
 
 const root = new URL('../', import.meta.url);
 
@@ -17,41 +17,17 @@ test('index loads a browser-classic bundle for direct file opening', async () =>
   assert.doesNotThrow(() => new vm.Script(bundle, { filename: 'bundle.js' }));
 });
 
-test('bundle parser supports semicolon-free direct imports and rejects aliases', () => {
-  const continuation = '\\' + '\n';
-  const parsed = parseModule(
-    "import { value } from './dependency.js'\nexport const result = value;",
-    'fixture.js'
-  );
-  assert.deepEqual(parsed.imports, [{ specifier: './dependency.js', names: ['value'] }]);
-  assert.deepEqual(parsed.exports, ['result']);
-  assert.match(parsed.code, /const result = value/);
-  assert.throws(
-    () => parseModule("import { value as alias } from './dependency.js';", 'fixture.js'),
-    /Only direct named imports/
-  );
-  assert.throws(
-    () => parseModule("import dependency from './dependency.js';", 'fixture.js'),
-    /Only direct named imports/
-  );
-  assert.throws(
-    () => validateImportBindings('fixture.js', ['missing'], 'dependency.js', ['value']),
-    /imports missing bindings.*missing/
-  );
-  assert.throws(
-    () => parseModule("const text = `BEFORE\\nimport { value } from './dependency.js';\\nAFTER`;", 'fixture.js'),
-    /Template literals are not supported/
-  );
-  assert.throws(
-    () => parseModule("/*\\nexport const hidden = true;\\n*/", 'fixture.js'),
-    /Block comments are not supported/
-  );
-  assert.throws(
-    () => parseModule("const text = 'BEFORE" + continuation + "export const hidden = true;" + continuation + "AFTER';", 'fixture.js'),
-    /Line continuations are not supported/
-  );
-  assert.throws(
-    () => parseModule("const loadUi = () => import('./ui.js');", 'fixture.js'),
-    /Dynamic imports are not supported/
-  );
+test('browser bundle supports standard module syntax and isolates private bindings', async () => {
+  const bundle = await buildBrowserBundle('tests/fixtures/bundle/entry.js');
+  const context = vm.createContext({});
+  new vm.Script(bundle).runInContext(context);
+  assert.equal(context.bundleFixture.first, 'a:template');
+  assert.equal(context.bundleFixture.second, 'b');
+  assert.match(context.bundleFixture.text, /import.*does-not-exist/);
+  assert.match(context.bundleFixture.text, /export const absent/);
+  assert.equal(await context.bundleFixture.load(), 'b');
+});
+
+test('browser bundle reports missing import bindings', async () => {
+  await assert.rejects(buildBrowserBundle('tests/fixtures/bundle/invalid-entry.js'), /No matching export.*missing/s);
 });
