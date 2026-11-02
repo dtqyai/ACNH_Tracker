@@ -1,178 +1,68 @@
-# ACNH Tracker
+# 岛藏 · Island Atlas
 
-《集合啦！动物森友会》生物、艺术品、唱片与小动物收集清单。查当前能抓什么，辨别艺术品真伪，记下每一次收获。
+一个从零实现的《集合啦！动物森友会》收集手册。界面采用独立的书面图鉴设计，代码使用原生 ES Modules，无运行时依赖，可直接作为 Cloudflare Workers 静态资源部署。
 
-收录 80 种鱼、80 种昆虫、40 种海洋生物、43 件艺术品、107 张唱片和 417 位小动物居民资料。生物图鉴支持南北半球。无需注册，下载项目后即可在浏览器中使用，记录保存在本机。
+## 功能
 
-## 开始使用
+- 80 种鱼、80 种昆虫、40 种海洋生物：南北半球、月份、小时、场所、天气与鱼影筛选。
+- 「此刻能遇见」按本机日期时间列出当前生物，可只看未收集并直接标记。
+- 43 件艺术品：类型、真伪与收集状态筛选，真赝说明和图片对照。
+- 107 张唱片：中英文名称、封面、价格、获取方式与说明。
+- 417 位小动物：种族、性别、性格、生日、爱好与联动组合筛选。
+- 排序、分类与总进度、批量标记、批量撤销。
+- 浏览器本地保存、多标签页同步、JSON 导入导出；兼容旧版数组备份和版本 1 备份，并保留当前图鉴不认识的 ID。
+- 图片懒加载、失败重试和恢复联网后重试；响应式手机布局。
 
-下载并解压整个项目，双击 `index.html`，用新版 Edge、Chrome 或 Safari 打开。保留同目录下的 `bundle.js` 和 `favicon.png`，无需安装 Node.js 或其他依赖。
+小动物仅用于浏览，不计入收集进度；可收集总数为 350 项。
 
-1. 选择岛屿所在的半球，切换到鱼、虫或海洋生物。
-2. 展开「今日可捕捉」，按电脑的日期和时间查看当前出现的生物，也可以只看未收集的条目，并直接勾选已收集的生物。
-3. 在列表中勾选已收集的生物，顶部会更新分类进度和总进度。
+## 本地运行
 
-生物列表可按月份、小时、收集状态筛选，鱼和昆虫还提供场所等条件；支持按名称、价格或收集状态排序。筛选面板底部的「查看结果」可收起条件并返回列表。「全标」和「全取消」只影响当前筛选结果，操作后可通过提示中的「撤销」恢复。撤销会跳过后来被其他操作修改的条目；导入备份后，此前的撤销不再生效。
-
-鱼、虫和海洋生物均附有缩略图，图片来自 BWIKI 的[鱼图鉴](https://wiki.biligame.com/dongsen/博物馆图鉴)、[虫图鉴](https://wiki.biligame.com/dongsen/虫图鉴)和[海洋生物图鉴](https://wiki.biligame.com/dongsen/海洋生物图鉴)。图片需联网加载；加载失败时可点击「重试」，恢复网络后也会自动重试一次；筛选和收集记录仍可使用。图片权利归原权利人所有。
-
-切换半球会立即更新查阅结果；如果浏览器无法保存偏好，页面会提示「设置未保存」。开启「只看未收集」后，今日面板显示尚未收集的数量；已收齐的分类会显示「当前可捕捉的生物均已收集」。
-
-时间筛选默认跟随电脑当前小时，月份默认不限。手动选择小时后会保持该选择，点击「当前时间」可恢复跟随时钟并保留其他筛选条件；「重置全部」会同时清除当前分类的筛选和排序。筛选摘要区分自动跟随的当前时间与手动固定的小时。「不限」显示任意时段的生物，「全天出现」只显示全天都能捕捉的生物。捕捉时间若显示 `09:00–17:00`，表示 16:59 仍可捕捉；跨午夜的结束时间会标注「次日」。
-
-部分鱼类的出现时段随月份变化：选择月份后，时间筛选及标签使用该月的时段；月份不限时，匹配任一出现月份，并分月份列出时段。「今日可捕捉」始终使用当前日期对应的月份和小时。
-
-## 艺术品
-
-切换到「艺术品」可查看 30 幅名画和 13 件雕塑，按名画／雕塑、有无赝品及收集状态筛选。勾选代表已收集真品，赝品不计入进度。艺术品有独立进度，也计入全部 350 项的总进度。
-
-展开条目可查看真品和赝品的区别、对照图及原资料链接。没有赝品的作品标注为「仅真品」。艺术品不受半球、月份和小时筛选影响，也不会出现在「今日可捕捉」中。
-
-缩略图和对照图直接加载自 BWIKI，需要联网，支持失败重试；离线时仍可阅读鉴伪说明、筛选和记录收集状态。收集记录沿用原有备份格式，旧版生物备份仍可导入。
-
-## 唱片
-
-切换到「唱片」可浏览 107 张可收集唱片（含 2.0 新增的 12 张），查看封面、中英文曲名、购买价格与获取说明。按获取方式和收集状态筛选，按名称或收集状态排序；支持批量标记、撤销和备份。唱片不参与月份、时段及「今日可捕捉」，计入独立进度和全部 350 项的总进度。
-
-中文曲名及主要数据来自 [BWIKI 唱片图鉴](https://wiki.biligame.com/dongsen/唱片图鉴)（修订 56974，2026-09-27 核对）。用 [Nookipedia 曲目目录](https://nookipedia.com/wiki/K.K._Slider_song)及 [Animal Crossing Wiki 唱片目录](https://animalcrossingwiki.de/acnh/katalog/musik)交叉核对。110 首曲目中有 3 首无法取得唱片，因此不计入收集进度；102 张可购买，另有 3 张隐藏点播、1 张首次演唱会赠送、1 张生日赠送。中文游戏点播需准确输入中文曲名，每次演唱会只获得一张唱片。
-
-BWIKI 将「K.K.嘻哈」英文名写作 K.K. Hip Hop，此处按 [Nookipedia 条目](https://nookipedia.com/wiki/K.K._Hop)修正为 K.K. Hop。95 张封面来自 BWIKI，缺失的 12 张 2.0 封面由 Animal Crossing Wiki 补齐。图片联网加载，支持失败重试，权利归原权利人所有；离线仍可查看文字和记录收集状态。
-
-## 保存与备份
-
-勾选会自动保存到当前浏览器，同一地址的多个页面会同步收集记录。记录不会上传，也不会自动同步到其他设备；清除浏览器数据会删除本地记录。
-
-等待保存时会显示「正在保存」，勾选状态会保留最近一次操作；此时暂不能批量修改或导入导出。保存失败会恢复已保存的状态并给出提示。
-
-- **备份**：展开右上角「备份」，点击「导出收集记录」，下载带日期的 JSON 文件。
-- **恢复或换设备**：在目标浏览器中展开「备份」，点击「导入收集记录」，选择备份文件。导入会替换现有收集记录，已有记录时会先请求确认。
-- **更换打开方式**：直接双击文件与通过 HTTP 地址访问使用不同的存储。先在原页面导出，再到新页面导入；换浏览器或访问地址时也按此操作。
-
-备份仅包含收集记录，半球和筛选设置不会随之导出。文件及其规范导出形式上限均为 64 KB，兼容旧版数组备份；保存时也会检查这一上限，确保记录仍可备份恢复。
-
-如果导入确认期间另一页面修改了记录，本次导入会中止，请重新导入。已有记录无法读取时，页面会暂停修改和导出，可用有效备份恢复。更新项目后，请刷新此前打开的页面。
-
-普通勾选、批量修改和撤销会保留当前图鉴尚未识别的记录及其修改标记；备份导入导出也会保留这些记录，导入时提示其数量，暂不计入当前图鉴的进度。此保护仅适用于已加载本次修复的页面，无法改变此前已打开的旧代码。
-
-保存需要浏览器支持 Web Locks API。若提示不支持安全保存，请更新浏览器，并使用直接打开文件、localhost 本地服务或 HTTPS 地址；此时仍可查看和导出已成功加载的记录。
-
-## 本地开发
-
-项目使用原生 HTML、CSS 和 JavaScript，无运行时依赖。开发检查需要 Node.js 22 或更高版本。
-
-在项目目录启动静态服务：
+需要通过 HTTP 打开 ES Modules。可直接使用 Wrangler：
 
 ```bash
-python3 -m http.server 8082
+npm install
+npm run dev
 ```
 
-打开 [本地页面](http://127.0.0.1:8082/)。页面加载的是生成文件 `bundle.js`，修改 JavaScript 源码后先重新构建，再刷新浏览器：
+也可使用任意静态 HTTP 服务，例如在此目录运行：
 
 ```bash
-npm ci
-npm run build
+python3 -m http.server 8080 --directory public
+```
+
+## 检查与测试
+
+```bash
 npm run check
+npx wrangler deploy --dry-run
 ```
 
-`bundle.js` 需要随源码一起提交，请勿手动编辑。开发前先运行 `npm ci` 安装固定版本的构建和部署工具。构建使用 esbuild，将标准 JavaScript 模块打包为可直接打开文件的单个脚本；支持模板字符串、块注释和导入别名，并隔离模块内部变量。`npm run check` 检查产物是否与源码一致，并执行语法检查和单元测试。安装时会自动检查；首次采用新构建方式或产物过期时，可用 `npm ci --ignore-scripts` 完成安装，再运行构建与检查。
-
-| 命令 | 用途 |
-| --- | --- |
-| `npm test` | 检查图鉴数据、筛选、备份、存储和并发修改逻辑 |
-| `npm run check` | 检查构建产物、JavaScript 语法并运行单元测试 |
-| `npm run test:browser` | 在真实 Chrome 中检查鼠标与键盘操作、多页面同步、图片重试、手机布局及直接打开文件 |
-
-浏览器测试需要本机安装 Chrome。macOS 默认使用 `/Applications/Google Chrome.app`，Linux 默认使用 `google-chrome`；其他安装位置通过 `CHROME_BIN` 指定可执行文件。测试使用临时服务和独立浏览器配置，结束后自动清理。GitHub Actions 会在推送到 `main` 和提交拉取请求时执行 `npm ci`（安装后自动检查源码与单元测试）、浏览器回归以及 Wrangler 部署预检。预检使用 `--dry-run`，不会发布网站，也不需要部署凭据。
-
-### 源码分工
-
-| 文件 | 内容 |
-| --- | --- |
-| `index.html` | 页面结构、样式和响应式布局 |
-| `app.js` | 启动、筛选、今日面板和交互协调 |
-| `today-view.js` | 今日生物的收集勾选、保存状态与焦点维护 |
-| `list-view.js`、`ui.js` | 列表渲染、提示和确认对话框 |
-| `image-view.js` | 生物与艺术品图片、失败重试与网络恢复 |
-| `collection.js`、`backup.js` | 收集状态同步、保存及备份导入导出 |
-| `core.js` | 筛选、校验、迁移等可独立测试的逻辑 |
-| `data.js`、`schema.js` | 图鉴数据入口、类别定义和半球月份换算 |
-| `music-data.js`、`music-view.js` | 唱片资料、封面和获取说明 |
-| `villager-data.js`、`villager-view.js` | 小动物资料、立绘、生日与口头禅 |
-| `art-data.js`、`art-view.js` | 艺术品资料、图片链接和鉴伪展示 |
-| `scripts/`、`tests/` | 构建脚本与自动化测试 |
-
-收集数据仍以 ID 数组保存；每项修改的版本标记另存于 `acnh_collected:revisions`，用于保护跨页面撤销和导入确认，不进入备份文件。
-
-修改生物数据时保留现有 ID，以免影响旧记录。南半球月份由北半球月份平移六个月生成，只需维护北半球数据。
-
-`hours` 中的每个整数代表从该整点开始的一小时，结束时刻不包含在内。`northSeasons` 表示按北半球月份划分的不同出现时段，顶层 `hours` 为这些时段的并集。具体月份使用 `hoursForMonth()`，不要直接读取并集来判断当前是否出现。
-
-生物时段按 Nookipedia 的 New Horizons [鱼类](https://nookipedia.com/wiki/Fish/New_Horizons)、[昆虫](https://nookipedia.com/wiki/Bug/New_Horizons)、[海洋生物](https://nookipedia.com/wiki/Sea_creature/New_Horizons)资料核对；BWIKI 的部分小时枚举包含结束小时，部分鱼类没有拆分季节，故没有直接沿用这些枚举。`tests/fixtures/critter-times.json` 保存独立的来源时间区间，回归测试覆盖 200 种生物在两个半球、12 个月、24 小时及全天筛选下的结果。
-
-### 小动物资料来源
-
-收录 417 位可入住居民，按种族、性别、性格（含 A/B 型）、出生月份、爱好和联动组合筛选。展示中英文名、立绘、生日和初始口头禅；支持名称排序。小动物仅用于浏览和筛选，不提供标记、收集进度或备份，不参与月份、时段和今日可捕捉。原有收集图鉴仍为 350 项。
-
-核对日期：2026-10-01。范围为《集合啦！动物森友会》中可入住的居民，共 417 位；特殊 NPC 不列入目录。所有角色使用游戏角色代码形成稳定 ID（例如 `villager_cat23`）。小动物目录仅供浏览、筛选，不提供标记或收集统计，全部居民显示英文名。
-
-#### 来源
-
-- 主要列表、中文名、立绘及详情链接：[BWIKI 小动物图鉴](https://wiki.biligame.com/dongsen/小动物图鉴)，修订 56837。
-- 种族、性别、性格及 A/B 型、生日、爱好：[社区 ACNH 原始数据表](https://docs.google.com/spreadsheets/d/13d_LAJPlxMa_DubPTuirkIV4DERBMXbrWQsmSh8ReK4/edit)，Villagers 页。
-- 简体中文名称及初始口头禅：[ACNH Translations](https://docs.google.com/spreadsheets/d/1MMbsvDfu59OY9YBEAfHhFJ6O8vRTllNFgMrX7RBZuyI/edit)，Villagers 和 Villager Catchphrases 页的 CNzh 列。
-- 辅助数据镜像：[Norviah/animal-crossing](https://github.com/Norviah/animal-crossing/blob/master/json/combined/Villagers.json)。镜像仅有 413 位居民，已与原始表核对其全部居民的名称、种族、性别、性格、A/B 型、生日、爱好及简体口头禅，字段一致；完整目录采用原始表。
-- 补充角色与图片：[Nookipedia 居民目录](https://nookipedia.com/wiki/Villager/New_Horizons)。[任天堂更新页面](https://animalcrossing.nintendo.com/new-horizons/update-3-0/)确认塞尔达传说与斯普拉遁的 4 位联动居民。
-
-#### 核对结果
-
-BWIKI 有 418 行：413 位不同的可入住居民、2 行重复居民（雀儿喜、咚比）、1 行空白 String、2 位特殊 NPC（西施惠、K.K.）。去除重复、空白与特殊 NPC；413 位居民的种族、性别、性格及 A/B 型、生日、爱好均与原始表一致。
-
-BWIKI 缺少下列 4 位居民，依据原始数据表、中文翻译表和 Nookipedia 补充；立绘与详情链接使用对应 Nookipedia 页面。
-
-| 中文名 | 英文名 | 角色代码 | 来源 |
-| --- | --- | --- | --- |
-| 丘栗 | Tulin | brd20 | [Nookipedia](https://nookipedia.com/wiki/Tulin) |
-| 米涅鲁 | Mineru | der12 | [Nookipedia](https://nookipedia.com/wiki/Mineru) |
-| 霓莎 | Cece | squ19 | [Nookipedia](https://nookipedia.com/wiki/Cece) |
-| 弥莎 | Viché | squ20 | [Nookipedia](https://nookipedia.com/wiki/Vich%C3%A9) |
-
-以下 10 处口头禅差异按原始翻译表 CNzh 列统一，保持简体中文原始文本，去除附加解释、标点和其他语言词语。
-
-| 居民 | BWIKI 列表 | 采用的简体中文口头禅 |
-| --- | --- | --- |
-| 熊战士 | over | Over |
-| 丹丹 | 哇哦 | 哇喔 |
-| 阿邦 | 切/关节 | 切 |
-| 莉拉 | 哈啰 | 哈罗 |
-| 莫儿 | 晶亮kira | 晶亮 |
-| 敖志明 | 哇。 | 哇 |
-| 罗萱儿 | 可爱 | 开心 |
-| 达满 | “禅” | 禅 |
-| 布兰妮 | 讨厌啦~ | 讨厌啦 |
-| 嘟嘟 | 哇塞 | 哇赛 |
-
-保留三丽鸥、塞尔达传说和斯普拉遁联动分类；名称、数据 schema 和界面均不保存或展示版本标签。
-
-`tests/fixtures/villagers.json` 保存原始表的独立字段快照，数据测试逐项比对全部 417 位居民，避免只校验数量却遗漏生日或性格错误。图片权利归原权利人所有，项目仅链接公开图片。
-
-### 艺术品资料来源
-
-中文名称和图片取自 [BWIKI 艺术品图鉴](https://wiki.biligame.com/dongsen/艺术品图鉴)及[艺术品鉴伪](https://wiki.biligame.com/dongsen/艺术品鉴伪)，真伪要点参照 [Future Press 官方攻略补充册](https://www.future-press.com/acnh/pdf/ACNH_April-Update_EN.pdf)第 4 页核对，并以本项目的简短说明呈现。图片权利归原权利人所有。
-
-BWIKI 鉴伪页中「动人的名画」的描述与官方攻略有出入，本项目采用「赝品缺少右上方的树」这一特征；名称「沉没的名画」也见于旧资料中的「沉默的名画」，此处按[现行物品名称](https://nookipedia.com/wiki/Item:Sinking_painting_(New_Horizons))记录。
+单元测试覆盖目录数量、全生物在两个半球和全部月份/小时的可用性、分类筛选、排序、时间标签与备份格式。
 
 ## 部署到 Cloudflare Workers
 
-项目已包含 `wrangler.jsonc`。准备好 Cloudflare 账号及部署凭据后，在项目目录运行：
+准备 Cloudflare 账号和 Wrangler 登录凭据后运行：
 
 ```bash
-npm ci
+npm install
 npm run check
 npm run deploy
 ```
 
-项目统一使用 npm，`package-lock.json` 随源码提交以固定部署工具及其依赖版本。Cloudflare 连接 GitHub 自动部署时使用 npm 安装依赖，部署命令为 `npx wrangler deploy`；如果原构建命令包含 Bun，请改用 npm。
+`wrangler.jsonc` 只将 `public/` 作为静态资源上传，不需要 Worker 脚本、数据库或构建步骤。记录保存在访问者浏览器，不上传到 Cloudflare。
 
-安装会自动执行检查；如果提示 `bundle.js` 过期，先运行 `npm run build`。需要在部署前预览 Workers 环境时，运行 `npm run preview`。
+## 文件结构
 
-`.assetsignore` 仅允许上传 `index.html`、`bundle.js` 和 `favicon.png`，源码、测试和本地依赖不会作为静态资源发布。
+| 路径 | 用途 |
+| --- | --- |
+| `public/index.html` | 语义化页面、图标与对话框 |
+| `public/styles.css` | 独立视觉系统与响应式布局 |
+| `public/app.js` | 页面渲染和交互 |
+| `public/catalog.js` | 筛选、半球、时段、排序和进度逻辑 |
+| `public/store.js` | 本地收集记录与备份 |
+| `public/data/` | 未改动的原始游戏资料及稳定 ID |
+| `tests/` | Node.js 单元测试 |
+
+## 资料与图片
+
+游戏资料沿用项目的已核对数据集，图片来源与权利归原权利人所有。主要资料来源为 BWIKI、Nookipedia、Animal Crossing Wiki、Future Press 官方攻略补充册及原项目 README 列出的社区原始数据表。图片需要联网加载，文字筛选和收集记录不依赖图片服务。

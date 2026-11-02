@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#244d3b">
+  <meta name="description" content="动森生物、艺术品、唱片与小动物图鉴，支持出现时间查询、真伪对照和本地收集记录。">
+  <title>岛藏 · 动森收集手册</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <svg class="svg-library" aria-hidden="true">
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 3C11 3 5 7 5 14c0 4 3 7 7 7 7 0 8-9 8-18Z"/><path d="M4 21c3-6 7-10 12-13"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M16 5c-5 0-9 3-12 7 3 4 7 7 12 7 3 0 5-3 5-7s-2-7-5-7Z"/><path d="m5 7-3-3v16l3-3M16 9h.01"/></symbol>
+    <symbol id="i-bug" viewBox="0 0 24 24"><path d="M8 9 5 7m11 2 3-2M8 14H3m13 0h5M8 18l-3 3m11-3 3 3M9 5 7 2m8 3 2-3"/><rect x="8" y="5" width="8" height="15" rx="4"/><path d="M8 11h8"/></symbol>
+    <symbol id="i-shell" viewBox="0 0 24 24"><path d="M3 15c0-7 4-12 9-12s9 5 9 12c0 4-4 6-9 6s-9-2-9-6Z"/><path d="M12 3v18M7 5l2 15M17 5l-2 15M3 15h18"/></symbol>
+    <symbol id="i-art" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m3 17 5-5 4 4 3-3 6 6"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13M9 9l11-2"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol>
+    <symbol id="i-paw" viewBox="0 0 24 24"><path d="M8 13c-2 0-5 3-4 6 1 2 4 1 6 1h4c2 0 5 1 6-1 1-3-2-6-4-6-2-1-6-1-8 0Z"/><ellipse cx="5" cy="9" rx="2" ry="3"/><ellipse cx="10" cy="5" rx="2" ry="3"/><ellipse cx="15" cy="5" rx="2" ry="3"/><ellipse cx="20" cy="9" rx="2" ry="3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 17v4h16v-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 4v6h6M5 15a8 8 0 1 0 1-9l-2 4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 4 6 4 9s-1 6-4 9c-3-3-4-6-4-9s1-6 4-9Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2 7 7 3-7 2-2 8-2-8-7-2 7-3 2-7Z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="./" aria-label="岛藏首页">
+        <span class="brand-mark"><svg><use href="#i-leaf"></use></svg></span>
+        <span><strong>岛藏</strong></span>
+      </a>
+      <nav class="category-nav" id="category-nav" aria-label="图鉴分类"></nav>
+      <div class="sidebar-bottom">
+        <div class="local-note"><span class="status-dot"></span>记录仅保存在此浏览器</div>
+        <button class="backup-link" data-action="open-backup"><svg><use href="#i-download"></use></svg>备份与恢复</button>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="mobile-brand"><span class="brand-mark"><svg><use href="#i-leaf"></use></svg></span><strong>岛藏</strong></div>
+        <div class="today-date" id="today-date"></div>
+        <div class="topbar-actions">
+          <div class="hemisphere-switch" aria-label="岛屿半球">
+            <svg><use href="#i-globe"></use></svg>
+            <button data-action="hemisphere" data-value="north">北半球</button>
+            <button data-action="hemisphere" data-value="south">南半球</button>
+          </div>
+          <button class="icon-button mobile-backup" data-action="open-backup" aria-label="备份与恢复"><svg><use href="#i-download"></use></svg></button>
+        </div>
+      </header>
+      <nav class="mobile-nav" id="mobile-category-nav" aria-label="移动端图鉴分类"></nav>
+
+      <main>
+        <section class="overview" id="overview"></section>
+        <section class="today-panel" id="today-panel"></section>
+        <section class="catalog-section" aria-labelledby="catalog-heading">
+          <div class="catalog-heading-row">
+            <div><h2 id="catalog-heading">图鉴目录</h2></div>
+            <div class="result-count" id="result-count"></div>
+          </div>
+          <div class="filter-panel" id="filter-panel"></div>
+          <div class="list-toolbar" id="list-toolbar"></div>
+          <div class="item-grid" id="item-grid"></div>
+          <div class="load-more-wrap" id="load-more-wrap"></div>
+        </section>
+      </main>
+      <footer class="page-footer"><span>资料来源：BWIKI · Nookipedia</span></footer>
+    </div>
+  </div>
+
+  <dialog class="detail-dialog" id="detail-dialog" aria-labelledby="detail-title">
+    <button class="dialog-close icon-button" data-action="close-detail" aria-label="关闭详情"><svg><use href="#i-close"></use></svg></button>
+    <div id="detail-content"></div>
+  </dialog>
+
+  <dialog class="backup-dialog" id="backup-dialog" aria-labelledby="backup-title">
+    <button class="dialog-close icon-button" data-action="close-backup" aria-label="关闭备份"><svg><use href="#i-close"></use></svg></button>
+    <h2 id="backup-title">备份与恢复</h2>
+    <p>导出 JSON 备份，换浏览器或设备时再导入。备份只包含收集记录，不包含筛选偏好。</p>
+    <div class="backup-summary" id="backup-summary"></div>
+    <div class="backup-actions">
+      <button class="button primary" data-action="export"><svg><use href="#i-download"></use></svg>导出收集记录</button>
+      <label class="button secondary file-button"><svg><use href="#i-upload"></use></svg>导入备份<input type="file" id="backup-file" accept="application/json,.json"></label>
+    </div>
+    <p class="backup-hint">兼容旧版数组备份与版本 1 备份，文件上限 64 KB。导入会替换当前记录。</p>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
