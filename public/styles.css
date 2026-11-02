@@ -143,7 +143,6 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .hemisphere-switch > svg { width: 16px; height: 16px; margin: 0 7px; color: var(--muted); }
 .hemisphere-switch button { padding: 7px 11px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); font-size: 12px; }
 .hemisphere-switch button.active { background: var(--green); color: white; box-shadow: 0 3px 8px rgb(40 88 67 / 15%); }
-.mobile-brand, .mobile-backup, .mobile-nav { display: none; }
 .icon-button {
   width: 38px;
   height: 38px;
@@ -155,6 +154,7 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
   background: var(--surface);
 }
 .icon-button:hover { background: var(--surface-soft); }
+.mobile-brand, .mobile-backup, .mobile-nav { display: none; }
 
 main { width: min(100%, 1500px); margin: 0 auto; padding: 38px clamp(24px, 4vw, 58px) 70px; }
 .overview {
@@ -179,6 +179,7 @@ main { width: min(100%, 1500px); margin: 0 auto; padding: 38px clamp(24px, 4vw, 
 .overview .eyebrow { color: var(--lime); margin-bottom: 13px; }
 .overview h1 { margin: 0; font-family: var(--font-serif); font-size: clamp(28px, 3vw, 42px); font-weight: 700; letter-spacing: 1px; line-height: 1.35; }
 .overview p { max-width: 550px; margin: 14px 0 0; color: #cadbd0; font-size: 13px; line-height: 1.8; }
+.overview.overview-without-progress p { max-width: 550px; padding-right: 0; }
 .overview-progress { flex: 0 0 auto; display: flex; align-items: center; gap: 18px; position: relative; z-index: 1; }
 .progress-ring {
   --progress: 0deg;
@@ -248,8 +249,17 @@ main { width: min(100%, 1500px); margin: 0 auto; padding: 38px clamp(24px, 4vw, 
   font-size: 12px;
   outline: none;
 }
-.control select { padding-right: 30px; text-overflow: ellipsis; cursor: pointer; }
-.control input:hover, .control select:hover, .control input:focus, .control select:focus { border-color: #a7b9aa; background: white; }
+.control select {
+  appearance: none;
+  padding-right: 38px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23758078' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.control input:hover, .control select:hover, .control input:focus, .control select:focus { border-color: #a7b9aa; background-color: white; }
 .control input::placeholder { color: #a3aaa3; }
 .filter-reset { align-self: end; height: 43px; padding: 0 13px; border: 0; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 12px; }
 .filter-reset:hover { color: var(--orange); }

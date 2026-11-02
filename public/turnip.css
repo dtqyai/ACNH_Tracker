@@ -63,7 +63,6 @@
 }
 @media (max-width: 760px) {
   .turnip-overview { min-height: 135px; }
-  .turnip-overview p { max-width: 100%; padding-right: 0; }
   .turnip-card { padding: 20px 16px; border-radius: 20px; }
   .turnip-card .section-head h2 { font-size: 16px; }
   .turnip-days { gap: 14px 9px; }

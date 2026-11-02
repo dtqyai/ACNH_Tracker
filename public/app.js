@@ -2,7 +2,7 @@ import {
   CATEGORIES, CATEGORY_MAP, COLLECTIBLE_IDS, DATA_MAP,
   defaultFilters, defaultSort, filterItems, sortItems, getOptions,
   getItem, getOverallProgress, getProgress, isAvailableNow,
-  formatMonths, formatHourRanges, monthsFor, timeDescription
+  formatMonths, monthsFor, timeDescription
 } from './catalog.js';
 import { CollectionStore, parseBackup, MAX_BACKUP_BYTES } from './store.js';
 import { createTurnipCalculator } from './turnip-view.js';
@@ -112,27 +112,28 @@ function renderNavigation() {
 function renderOverview() {
   const isTurnip = state.category === 'turnip';
   $('#overview').classList.toggle('turnip-overview', isTurnip);
+  $('#overview').classList.toggle('overview-without-progress', !CATEGORY_MAP[state.category]?.collectible);
   if (isTurnip) {
     $('#overview').innerHTML = '<div class="overview-copy"><h1>大头菜计算器</h1><p>填写买入价与已知卖价，预测本周价格区间。</p></div>';
     return;
   }
   const category = CATEGORY_MAP[state.category];
-  const overall = getOverallProgress(store.collected);
-  const current = getProgress(category.id, store.collected);
-  const progressText = category.collectible
-    ? `本类已收集 ${current.done} / ${current.total}`
-    : `共收录 ${current.total} 位居民`;
+  let progress = '';
+  if (category.collectible) {
+    const overall = getOverallProgress(store.collected);
+    const current = getProgress(category.id, store.collected);
+    progress = `<div class="overview-progress">
+      <div class="progress-ring" style="--progress:${overall.percent * 3.6}deg">
+        <div class="progress-ring-content"><strong>${overall.percent}%</strong><small>${overall.done} / ${overall.total}</small></div>
+      </div>
+      <div class="progress-label"><strong>总收集进度</strong><span>本类已收集 ${current.done} / ${current.total}</span></div>
+    </div>`;
+  }
   $('#overview').innerHTML = `
     <div class="overview-copy">
       <h1>${category.plural}</h1>
       <p>${categoryDescriptions[category.id]}</p>
-    </div>
-    <div class="overview-progress">
-      <div class="progress-ring" style="--progress:${overall.percent * 3.6}deg">
-        <div class="progress-ring-content"><strong>${overall.percent}%</strong><small>${overall.done} / ${overall.total}</small></div>
-      </div>
-      <div class="progress-label"><strong>总收集进度</strong><span>${progressText}</span></div>
-    </div>`;
+    </div>${progress}`;
 }
 
 function renderToday() {
@@ -152,13 +153,13 @@ function renderToday() {
   const items = visible.length ? visible.map(item => `
     <article class="today-item ${store.has(item.id) ? 'is-collected' : ''}">
       <div class="today-thumb">${imageMarkup(item)}</div>
-      <div class="today-info"><strong>${escapeHtml(item.name)}</strong><span>${item.price.toLocaleString()} 铃钱 · ${formatHourRanges([now.getHours()])}</span></div>
+      <div class="today-info"><strong>${escapeHtml(item.name)}</strong><span>${item.price.toLocaleString()} 铃钱</span><span>${timeDescription(item, state.hemisphere, now.getMonth() + 1)}</span></div>
       <button class="mini-check" data-action="toggle" data-id="${item.id}" aria-pressed="${store.has(item.id)}" aria-label="${store.has(item.id) ? '取消收集' : '标记已收集'}${escapeHtml(item.name)}">${icon('check')}</button>
     </article>`).join('') : `<div class="today-empty">${state.todayUncollected && uncollectedCount === 0 ? '此刻能遇到的都已收齐，去看看别处吧。' : '这个时段没有符合当前条件的生物。'}</div>`;
 
   $('#today-panel').innerHTML = `<div class="today-card">
     <div class="section-head">
-      <div class="section-title-wrap"><span class="section-icon">${icon('spark')}</span><div><h2>此刻，在岛上能遇见</h2><p>${state.hemisphere === 'north' ? '北半球' : '南半球'} · ${now.getMonth() + 1}月${now.getDate()}日 ${time} · 当前 ${allAvailable.length} 种</p></div></div>
+      <div class="section-title-wrap"><span class="section-icon">${icon('spark')}</span><div><h2>当前可收集</h2><p>${state.hemisphere === 'north' ? '北半球' : '南半球'} · ${now.getMonth() + 1}月${now.getDate()}日 ${time} · 当前 ${allAvailable.length} 种</p></div></div>
       <label class="today-toggle"><input type="checkbox" id="today-uncollected" ${checked(state.todayUncollected)}>只看未收集</label>
     </div>
     <div class="today-list">${items}</div>
