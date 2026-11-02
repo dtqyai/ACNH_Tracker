@@ -1,0 +1,85 @@
+.turnip-panel { margin-top: 24px; }
+.turnip-card { padding: 26px 28px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
+.turnip-card .section-head { margin-bottom: 16px; }
+.turnip-card .small-button { min-height: 40px; }
+.turnip-note { margin: 0 0 20px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.turnip-buy { max-width: 240px; margin-bottom: 24px; }
+.turnip-price input { height: 44px; font-size: 16px; font-variant-numeric: tabular-nums; }
+.turnip-price input[aria-invalid="true"] { border-color: #a34530; background: #fff3ed; }
+.turnip-days { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.turnip-day { min-width: 0; margin: 0; padding: 14px 11px; border: 1px solid var(--line); border-radius: 15px; }
+.turnip-day legend { padding: 0 5px; color: var(--green); font-size: 13px; font-weight: 600; }
+.turnip-day .turnip-price + .turnip-price { display: block; margin-top: 13px; }
+.turnip-status { padding: 28px 20px; border: 1px dashed var(--line); border-radius: var(--radius-md); color: var(--muted); text-align: center; font-size: 13px; line-height: 1.8; }
+.turnip-warning { padding: 14px 18px; border: 1px solid #e7bfa9; border-radius: 12px; background: var(--orange-soft); color: #8f452c; font-size: 12px; line-height: 1.8; }
+.turnip-stats { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 16px; margin: 24px 0; }
+.turnip-stats > div { padding: 21px 24px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.turnip-stats > div:first-child { background: var(--lime-bright); border-color: #d6dfbc; }
+.turnip-stats span { display: block; margin-bottom: 10px; color: var(--muted); font-size: 11px; }
+.turnip-stats strong { color: var(--green); font-size: clamp(22px, 2.4vw, 30px); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.turnip-stats small { font-size: 12px; font-weight: 500; }
+#turnip-results > .turnip-card + .turnip-card { margin-top: 20px; }
+#turnip-results > .turnip-note { margin-top: 16px; }
+.turnip-muted { color: var(--muted); font-size: 11px; }
+.turnip-patterns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.turnip-pattern > div:first-child { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; }
+.turnip-pattern strong { color: var(--green); font-variant-numeric: tabular-nums; }
+.turnip-probability { height: 7px; margin-top: 12px; overflow: hidden; border-radius: 10px; background: var(--surface-soft); }
+.turnip-probability > span { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+.turnip-pattern.is-unlikely { color: var(--muted); }
+.turnip-pattern.is-unlikely strong { color: var(--muted); }
+.turnip-legend { display: flex; flex-wrap: wrap; gap: 18px; color: var(--muted); font-size: 11px; }
+.turnip-legend > span { display: inline-flex; align-items: center; gap: 7px; }
+.turnip-legend i { display: inline-block; }
+.range-key { width: 4px; height: 13px; border-radius: 2px; background: var(--green); }
+.known-key { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); }
+.buy-key { width: 14px; border-top: 2px dashed #8c9771; }
+.turnip-chart-scroll { overflow-x: auto; margin: 20px -8px 24px; }
+.turnip-chart { display: block; width: 100%; min-width: 600px; height: auto; overflow: visible; fill: none; stroke: none; }
+.turnip-chart text { fill: var(--muted); stroke: none; font-family: var(--font-sans); font-size: 11px; font-variant-numeric: tabular-nums; }
+.turnip-gridline { stroke: var(--line); stroke-width: 1; }
+.turnip-range { stroke: var(--green); stroke-width: 6; stroke-linecap: round; opacity: .65; }
+.turnip-cap { stroke: var(--green); stroke-width: 2; }
+.turnip-known { fill: var(--orange); stroke: var(--surface); stroke-width: 2; }
+.turnip-buy-line { stroke: #8c9771; stroke-width: 1.5; stroke-dasharray: 5 5; }
+.turnip-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 12px; font-variant-numeric: tabular-nums; }
+.turnip-table th, .turnip-table td { padding: 11px 13px; }
+.turnip-table thead { background: var(--surface-soft); color: var(--muted); }
+.turnip-table thead th { font-size: 11px; font-weight: 500; white-space: nowrap; }
+.turnip-table th:first-child { text-align: left; }
+.turnip-table tbody th { font-weight: 500; white-space: nowrap; }
+.turnip-table tbody th span { margin-left: 12px; color: var(--muted); font-size: 11px; }
+.turnip-table tr.turnip-day-start { border-top: 1px solid var(--line); }
+.turnip-recorded { color: #a95531; font-weight: 700; }
+.turnip-attribution { margin: 24px 0 0; color: var(--muted); font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
+.turnip-attribution a { text-underline-offset: 3px; }
+.turnip-attribution a:hover { color: var(--green); }
+.turnip-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+
+@media (max-width: 1100px) {
+  .turnip-days { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .turnip-patterns { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .turnip-stats > div { padding: 18px; }
+}
+@media (max-width: 760px) {
+  .turnip-overview { min-height: 135px; }
+  .turnip-overview p { max-width: 100%; padding-right: 0; }
+  .turnip-card { padding: 20px 16px; border-radius: 20px; }
+  .turnip-card .section-head h2 { font-size: 16px; }
+  .turnip-days { gap: 14px 9px; }
+  .turnip-day { padding: 10px 8px; border-radius: 12px; }
+  .turnip-note { font-size: 11px; }
+  .turnip-buy { max-width: 100%; margin-bottom: 20px; }
+  .turnip-stats { grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+  .turnip-stats > div:first-child { grid-column: 1 / -1; }
+  .turnip-stats > div { padding: 16px 18px; }
+  .turnip-stats strong { font-size: 25px; }
+  .turnip-table th, .turnip-table td { padding: 10px 5px; }
+  .turnip-table tbody th span { margin-left: 7px; }
+  .turnip-muted { font-size: 10px; }
+}
+@media (max-width: 390px) {
+  .turnip-days { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .turnip-patterns { gap: 18px 14px; }
+  .turnip-pattern > div:first-child { font-size: 11px; }
+}

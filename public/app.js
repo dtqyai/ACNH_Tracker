@@ -5,6 +5,7 @@ import {
   formatMonths, formatHourRanges, monthsFor, timeDescription
 } from './catalog.js';
 import { CollectionStore, parseBackup, MAX_BACKUP_BYTES } from './store.js';
+import { createTurnipCalculator } from './turnip-view.js';
 
 const $ = selector => document.querySelector(selector);
 const icon = (name, className = '') => `<svg class="${className}" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
@@ -40,7 +41,7 @@ function restoreFilters(category, values = {}) {
 
 const saved = loadPreferences();
 const state = {
-  category: CATEGORY_MAP[saved.category] ? saved.category : 'fish',
+  category: CATEGORY_MAP[saved.category] || saved.category === 'turnip' ? saved.category : 'fish',
   hemisphere: ['north', 'south'].includes(saved.hemisphere) ? saved.hemisphere : 'north',
   filters: Object.fromEntries(CATEGORIES.map(category => [category.id,
     restoreFilters(category.id, saved.filters?.[category.id])
@@ -69,6 +70,8 @@ try {
   queueMicrotask(() => showToast(`浏览器存储不可用，本次记录无法持久保存`));
 }
 
+const turnipCalculator = createTurnipCalculator($('#turnip-panel'), showToast);
+
 function savePreferences() {
   try {
     localStorage.setItem(PREFS_KEY, JSON.stringify({
@@ -96,7 +99,7 @@ function renderNavigation() {
       data-action="category" data-value="${category.id}" aria-current="${state.category === category.id ? 'page' : 'false'}">
       ${icon(category.icon)}<span class="nav-name">${category.name}</span><span class="nav-count">${count}</span>
     </button>`;
-  }).join('');
+  }).join('') + `<button class="nav-item ${state.category === 'turnip' ? 'active' : ''}" data-action="category" data-value="turnip" aria-current="${state.category === 'turnip' ? 'page' : 'false'}">${icon('turnip')}<span class="nav-name">大头菜</span></button>`;
   $('#category-nav').innerHTML = markup;
   $('#mobile-category-nav').innerHTML = markup;
   document.querySelectorAll('[data-action="hemisphere"]').forEach(button => {
@@ -107,6 +110,12 @@ function renderNavigation() {
 }
 
 function renderOverview() {
+  const isTurnip = state.category === 'turnip';
+  $('#overview').classList.toggle('turnip-overview', isTurnip);
+  if (isTurnip) {
+    $('#overview').innerHTML = '<div class="overview-copy"><h1>大头菜计算器</h1><p>填写买入价与已知卖价，预测本周价格区间。</p></div>';
+    return;
+  }
   const category = CATEGORY_MAP[state.category];
   const overall = getOverallProgress(store.collected);
   const current = getProgress(category.id, store.collected);
@@ -128,7 +137,7 @@ function renderOverview() {
 
 function renderToday() {
   const category = CATEGORY_MAP[state.category];
-  if (!category.seasonal) {
+  if (!category?.seasonal) {
     $('#today-panel').innerHTML = '';
     return;
   }
@@ -345,8 +354,17 @@ function render() {
   renderNavigation();
   renderOverview();
   renderToday();
-  renderFilters();
-  renderList();
+  const isTurnip = state.category === 'turnip';
+  $('.catalog-section').hidden = isTurnip;
+  $('#today-panel').hidden = isTurnip;
+  $('#turnip-panel').hidden = !isTurnip;
+  $('.hemisphere-switch').hidden = isTurnip;
+  if (isTurnip) {
+    turnipCalculator.render();
+  } else {
+    renderFilters();
+    renderList();
+  }
   renderBackupSummary();
   if (focusId) {
     const next = document.getElementById(focusId);
