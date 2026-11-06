@@ -63,12 +63,13 @@ npm run deploy
 | `public/store.js` | 本地收集记录与备份 |
 | `public/turnip.js`、`public/turnip-view.js`、`public/turnip.css` | 大头菜预测逻辑、界面与样式 |
 | `public/vendor/turnip-calculator/` | 固定版本的本地 WebAssembly 算法与 MIT 许可 |
-| `public/data/` | 未改动的原始游戏资料及稳定 ID |
+| `public/data/` | 图鉴资料、本地图片路径及稳定 ID |
+| `public/images/` | 随站点发布的图鉴图片 |
 | `tests/` | Node.js 单元测试 |
 
 ## 资料与图片
 
-游戏资料沿用项目的已核对数据集，图片来源与权利归原权利人所有。主要资料来源为 BWIKI、Nookipedia、Animal Crossing Wiki、Future Press 官方攻略补充册及原项目 README 列出的社区原始数据表。图片需要联网加载，文字筛选和收集记录不依赖图片服务。
+游戏资料沿用项目的已核对数据集，图片来源与权利归原权利人所有。主要资料来源为 BWIKI、Nookipedia、Animal Crossing Wiki、Future Press 官方攻略补充册及原项目 README 列出的社区原始数据表。图鉴图片随项目保存在 `public/images/`，由站点直接提供。
 
 
 ## 大头菜算法
