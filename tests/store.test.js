@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getHarvArtWeek, makeChanges, parseBackup, readHarvArtCount, serializeBackup } from '../public/store.js';
+import { getHarvArtWeek, parseBackup, readHarvArtCount, serializeBackup } from '../public/store.js';
 
 test('Harv’s Island art count starts a new week on Monday at 05:00 local time', () => {
   const storage = { getItem: () => JSON.stringify({ week: '2024-12-30', count: 2 }) };
@@ -21,12 +21,4 @@ test('invalid and oversized backups are rejected', () => {
   assert.throws(() => parseBackup('{"version":2,"collected":[]}'), /版本/);
   assert.throws(() => parseBackup('{"version":1,"collected":[42]}'), /字符串数组/);
   assert.throws(() => parseBackup(JSON.stringify(['x'.repeat(64 * 1024)])), /64 KB/);
-});
-
-test('bulk changes exclude no-ops and retain before and after states', () => {
-  const changes = makeChanges(new Set(['already']), ['already', 'new', 'other'], true);
-  assert.deepEqual(changes, [
-    { id: 'new', before: false, after: true },
-    { id: 'other', before: false, after: true }
-  ]);
 });

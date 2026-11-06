@@ -270,9 +270,8 @@ main { width: min(100%, 1500px); margin: 0 auto; padding: 38px clamp(24px, 4vw, 
 .filter-reset { align-self: end; height: 43px; padding: 0 13px; border: 0; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 12px; }
 .filter-reset:hover { color: var(--orange); }
 .filter-reset svg { width: 15px; height: 15px; }
-.list-toolbar { min-height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.list-toolbar { min-height: 54px; display: flex; align-items: center; }
 .active-summary { color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bulk-actions { display: flex; gap: 8px; flex: 0 0 auto; }
 .small-button { padding: 7px 11px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--green); font-size: 11px; }
 .small-button:hover { border-color: #9db1a2; background: var(--surface); }
 .small-button:disabled { opacity: .4; cursor: default; }
@@ -427,9 +426,6 @@ dialog::backdrop { background: rgb(20 40 31 / 48%); backdrop-filter: blur(5px); 
   background: #1e382c;
   color: white;
   box-shadow: 0 12px 35px rgb(20 40 30 / 25%);
-  display: flex;
-  align-items: center;
-  gap: 16px;
   font-size: 12px;
   opacity: 0;
   transform: translate(-50%, 15px);
@@ -437,7 +433,6 @@ dialog::backdrop { background: rgb(20 40 31 / 48%); backdrop-filter: blur(5px); 
   transition: opacity .2s, transform .2s;
 }
 .toast.visible { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
-.toast button { padding: 3px 0; border: 0; background: transparent; color: var(--lime); font-weight: 700; }
 
 @media (min-width: 1500px) {
   .item-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -495,7 +490,7 @@ dialog::backdrop { background: rgb(20 40 31 / 48%); backdrop-filter: blur(5px); 
   .filter-row, .filter-row.secondary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
   .control-label { font-size: 9px; }
   .control input, .control select { font-size: 11px; }
-  .list-toolbar { align-items: flex-start; padding: 13px 0; flex-direction: column; gap: 10px; }
+  .list-toolbar { padding: 13px 0; }
   .active-summary { max-width: 100%; }
   .item-grid { grid-template-columns: 1fr; gap: 12px; }
   .item-card { min-height: 215px; }

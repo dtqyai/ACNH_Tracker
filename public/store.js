@@ -48,14 +48,6 @@ export function serializeBackup(collected) {
   return JSON.stringify({ version: 1, collected: [...collected] });
 }
 
-export function makeChanges(collected, ids, value) {
-  return ids.reduce((changes, id) => {
-    const before = collected.has(id);
-    if (before !== value) changes.push({ id, before, after: value });
-    return changes;
-  }, []);
-}
-
 export class CollectionStore extends EventTarget {
   constructor(storage = window.localStorage) {
     super();
@@ -95,31 +87,6 @@ export class CollectionStore extends EventTarget {
     if (value) next.add(id);
     else next.delete(id);
     this.commit(next);
-  }
-
-  bulk(ids, value) {
-    const changes = makeChanges(this.collected, ids, value);
-    if (!changes.length) return changes;
-    const next = new Set(this.collected);
-    for (const change of changes) {
-      if (value) next.add(change.id);
-      else next.delete(change.id);
-    }
-    this.commit(next);
-    return changes;
-  }
-
-  undo(changes) {
-    const next = new Set(this.collected);
-    let restored = 0;
-    for (const change of changes) {
-      if (next.has(change.id) !== change.after) continue;
-      if (change.before) next.add(change.id);
-      else next.delete(change.id);
-      restored += 1;
-    }
-    if (restored) this.commit(next);
-    return restored;
   }
 
   replace(records) {

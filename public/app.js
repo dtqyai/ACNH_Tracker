@@ -57,7 +57,6 @@ const state = {
 };
 
 let store;
-let undoChanges = null;
 let toastTimer;
 let lastHour = new Date().getHours();
 let detailItem = null;
@@ -270,11 +269,7 @@ function renderList() {
   const results = currentResults();
   const visible = results.slice(0, state.limit);
   $('#result-count').innerHTML = `<strong>${results.length}</strong> 项结果`;
-  $('#list-toolbar').innerHTML = `<div class="active-summary">${escapeHtml(filterSummary())} · 显示 ${visible.length} / ${results.length}</div>
-    ${CATEGORY_MAP[state.category].collectible ? `<div class="bulk-actions">
-      <button class="small-button" data-action="bulk" data-value="true" ${results.length ? '' : 'disabled'}>标记筛选结果</button>
-      <button class="small-button" data-action="bulk" data-value="false" ${results.length ? '' : 'disabled'}>取消筛选结果</button>
-    </div>` : ''}`;
+  $('#list-toolbar').innerHTML = `<div class="active-summary">${escapeHtml(filterSummary())} · 显示 ${visible.length} / ${results.length}</div>`;
   $('#item-grid').innerHTML = visible.length ? visible.map(item => cardMarkup(state.category, item)).join('') : `
     <div class="empty-state"><div class="empty-icon">${icon(CATEGORY_MAP[state.category].icon)}</div><h3>没有符合条件的条目</h3><p>请调整或重置筛选条件。</p><button class="button secondary" data-action="reset-filters">重置筛选条件</button></div>`;
   $('#load-more-wrap').innerHTML = results.length > visible.length
@@ -393,12 +388,12 @@ function render() {
   }
 }
 
-function showToast(message, withUndo = false) {
+function showToast(message) {
   clearTimeout(toastTimer);
   const toast = $('#toast');
-  toast.innerHTML = `<span>${escapeHtml(message)}</span>${withUndo ? '<button data-action="undo">撤销</button>' : ''}`;
+  toast.textContent = message;
   toast.classList.add('visible');
-  toastTimer = setTimeout(() => toast.classList.remove('visible'), withUndo ? 7000 : 3200);
+  toastTimer = setTimeout(() => toast.classList.remove('visible'), 3200);
 }
 
 function openDetail(id) {
@@ -430,7 +425,6 @@ async function importBackup(file) {
     if (store.collected.size && !window.confirm('导入会替换当前收集记录，确定继续吗？')) return;
     const unknown = [...records].filter(id => !COLLECTIBLE_IDS.has(id)).length;
     store.replace(records);
-    undoChanges = null;
     $('#backup-dialog').close();
     showToast(`已导入 ${records.size} 项记录${unknown ? `，其中 ${unknown} 项属于其他图鉴版本` : ''}`);
   } catch (error) {
@@ -505,20 +499,6 @@ document.addEventListener('click', event => {
         state.limit += PAGE_SIZE;
         renderList();
         break;
-      case 'bulk': {
-        const desired = value === 'true';
-        const changes = store.bulk(currentResults().map(item => item.id), desired);
-        undoChanges = changes.length ? changes : null;
-        showToast(changes.length ? `已${desired ? '标记' : '取消'} ${changes.length} 项` : '筛选结果无需修改', changes.length > 0);
-        break;
-      }
-      case 'undo': {
-        if (!undoChanges) break;
-        const restored = store.undo(undoChanges);
-        undoChanges = null;
-        showToast(`已撤销 ${restored} 项修改`);
-        break;
-      }
       case 'open-backup':
         renderBackupSummary();
         $('#backup-dialog').showModal();
