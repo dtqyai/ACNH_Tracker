@@ -64,6 +64,20 @@
       <main>
         <section class="overview" id="overview"></section>
         <section class="today-panel" id="today-panel"></section>
+        <section class="today-panel today-card section-head harv-art-counter" id="harv-art-counter" aria-labelledby="harv-art-title" hidden>
+          <div class="section-title-wrap">
+            <span class="section-icon"><svg aria-hidden="true"><use href="#i-art"></use></svg></span>
+            <div>
+              <h2 id="harv-art-title">巴猎岛本周真品</h2>
+              <p>遇到新上架的真品时记 1 件，每周一 05:00 重置。</p>
+            </div>
+          </div>
+          <div class="harv-art-controls">
+            <button type="button" class="icon-button" id="harv-art-decrease" data-action="harv-art-count" data-value="-1" aria-label="减记一件真品">−</button>
+            <output id="harv-art-count" aria-label="本周已记录真品数量"></output>
+            <button type="button" class="icon-button" id="harv-art-increase" data-action="harv-art-count" data-value="1" aria-label="记录一件真品">+</button>
+          </div>
+        </section>
         <section class="turnip-panel" id="turnip-panel" aria-label="大头菜计算器" hidden></section>
         <section class="catalog-section" aria-labelledby="catalog-heading">
           <div class="catalog-heading-row">

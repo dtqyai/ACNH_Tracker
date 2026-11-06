@@ -207,6 +207,12 @@ main { width: min(100%, 1500px); margin: 0 auto; padding: 38px clamp(24px, 4vw, 
 .section-icon svg { width: 19px; height: 19px; }
 .section-head h2 { margin: 0; font-size: 17px; letter-spacing: .3px; }
 .section-head p { margin: 4px 0 0; color: #75816b; font-size: 11px; }
+.section-head.harv-art-counter { align-items: center; flex-wrap: wrap; margin-bottom: 0; }
+.harv-art-counter .section-icon { flex: 0 0 auto; }
+.harv-art-controls { display: flex; align-items: center; gap: 10px; }
+.harv-art-controls output { min-width: 58px; text-align: center; color: var(--green); font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.harv-art-controls .icon-button { font-size: 20px; }
+.harv-art-controls .icon-button:disabled { opacity: .45; cursor: default; }
 .text-button { padding: 5px 0; border: 0; background: transparent; color: var(--green); font-size: 12px; font-weight: 600; }
 .text-button:hover { color: var(--orange); }
 .today-toggle { display: flex; align-items: center; gap: 8px; color: #66735e; font-size: 12px; cursor: pointer; }

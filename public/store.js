@@ -1,5 +1,28 @@
 const STORAGE_KEY = 'acnh_collected';
 const MAX_BACKUP_BYTES = 64 * 1024;
+export const HARV_ART_KEY = 'island_atlas_harv_art_v1';
+export const HARV_ART_LIMIT = 2;
+
+export function getHarvArtWeek(now = new Date()) {
+  const monday = new Date(now);
+  // The game day changes at 05:00 local time.
+  if (monday.getHours() < 5) monday.setDate(monday.getDate() - 1);
+  const daysSinceMonday = (monday.getDay() + 6) % 7;
+  monday.setDate(monday.getDate() - daysSinceMonday);
+  return `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
+}
+
+export function readHarvArtCount(week, storage) {
+  try {
+    const record = JSON.parse((storage ?? window.localStorage).getItem(HARV_ART_KEY));
+    if (record?.week === week && Number.isInteger(record.count) && record.count >= 0 && record.count <= HARV_ART_LIMIT) {
+      return record.count;
+    }
+  } catch {
+    // An unavailable or invalid record starts at zero.
+  }
+  return 0;
+}
 
 function byteLength(text) {
   return new TextEncoder().encode(text).byteLength;

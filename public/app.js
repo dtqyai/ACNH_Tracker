@@ -4,7 +4,10 @@ import {
   getItem, getOverallProgress, getProgress, isAvailableNow,
   formatMonths, monthsFor, timeDescription
 } from './catalog.js';
-import { CollectionStore, parseBackup, MAX_BACKUP_BYTES } from './store.js';
+import {
+  CollectionStore, parseBackup, MAX_BACKUP_BYTES,
+  HARV_ART_KEY, HARV_ART_LIMIT, getHarvArtWeek, readHarvArtCount
+} from './store.js';
 import { createTurnipCalculator } from './turnip-view.js';
 
 const $ = selector => document.querySelector(selector);
@@ -165,6 +168,19 @@ function renderToday() {
     <div class="today-list">${items}</div>
     ${available.length ? `<div class="today-more"><button class="text-button" data-action="show-today-all">查看全部 ${available.length} 项 ${icon('arrow')}</button></div>` : ''}
   </div>`;
+}
+
+function renderHarvArtCounter() {
+  const panel = $('#harv-art-counter');
+  panel.hidden = state.category !== 'art';
+  if (panel.hidden) return;
+
+  const count = readHarvArtCount(getHarvArtWeek());
+  const label = `${count} / ${HARV_ART_LIMIT}`;
+  const output = $('#harv-art-count');
+  if (output.textContent !== label) output.textContent = label;
+  $('#harv-art-decrease').disabled = count === 0;
+  $('#harv-art-increase').disabled = count === HARV_ART_LIMIT;
 }
 
 function optionControl(category, field, label, options, value = state.filters[category][field]) {
@@ -355,6 +371,7 @@ function render() {
   renderNavigation();
   renderOverview();
   renderToday();
+  renderHarvArtCounter();
   const isTurnip = state.category === 'turnip';
   $('.catalog-section').hidden = isTurnip;
   $('#today-panel').hidden = isTurnip;
@@ -450,6 +467,13 @@ document.addEventListener('click', event => {
         savePreferences();
         render();
         break;
+      case 'harv-art-count': {
+        const week = getHarvArtWeek();
+        const count = Math.min(HARV_ART_LIMIT, Math.max(0, readHarvArtCount(week) + Number(value)));
+        localStorage.setItem(HARV_ART_KEY, JSON.stringify({ week, count }));
+        renderHarvArtCounter();
+        break;
+      }
       case 'toggle': {
         store.set(id, !store.has(id));
         if (detailItem?.item.id === id) renderDetail();
@@ -575,5 +599,6 @@ setInterval(() => {
   } else {
     renderDate();
     renderToday();
+    renderHarvArtCounter();
   }
 }, 60_000);
