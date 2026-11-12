@@ -111,6 +111,15 @@ function renderNavigation() {
   });
 }
 
+function renderOverallProgress() {
+  const { done, total, percent } = getOverallProgress(store.collected);
+  const markup = `<span>总收集进度</span><strong>${done} / ${total} · ${percent}%</strong>
+    <progress aria-label="总收集进度" value="${done}" max="${total}"></progress>`;
+  document.querySelectorAll('.overall-progress').forEach(summary => {
+    summary.innerHTML = markup;
+  });
+}
+
 function renderOverview() {
   const isTurnip = state.category === 'turnip';
   $('#overview').classList.toggle('turnip-overview', isTurnip);
@@ -122,13 +131,12 @@ function renderOverview() {
   const category = CATEGORY_MAP[state.category];
   let progress = '';
   if (category.collectible) {
-    const overall = getOverallProgress(store.collected);
-    const current = getProgress(category.id, store.collected);
-    progress = `<div class="overview-progress">
-      <div class="progress-ring" style="--progress:${overall.percent * 3.6}deg">
-        <div class="progress-ring-content"><strong>${overall.percent}%</strong><small>${overall.done} / ${overall.total}</small></div>
+    const { done, total, percent } = getProgress(category.id, store.collected);
+    progress = `<div class="overview-progress" role="group" aria-label="本类收集进度">
+      <div class="progress-ring" style="--progress:${percent * 3.6}deg">
+        <div class="progress-ring-content"><strong>${percent}%</strong><small>${done} / ${total}</small></div>
       </div>
-      <div class="progress-label"><strong>总收集进度</strong><span>本类已收集 ${current.done} / ${current.total}</span></div>
+      <strong class="progress-label" aria-hidden="true">本类收集进度</strong>
     </div>`;
   }
   $('#overview').innerHTML = `
@@ -364,6 +372,7 @@ function render() {
   const selection = active && typeof active.selectionStart === 'number' ? [active.selectionStart, active.selectionEnd] : null;
   renderDate();
   renderNavigation();
+  renderOverallProgress();
   renderOverview();
   renderToday();
   renderHarvArtCounter();

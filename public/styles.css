@@ -95,6 +95,18 @@ svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width:
 .nav-item .nav-name { flex: 1; }
 .nav-count { font-size: 11px; font-variant-numeric: tabular-nums; opacity: .7; }
 .sidebar-bottom { margin-top: auto; padding-top: 24px; }
+.overall-progress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.overall-progress progress { grid-column: 1 / -1; width: 100%; height: 8px; accent-color: var(--green); }
+.sidebar .overall-progress { margin: 0 8px 18px; color: #d8e1d8; }
+.sidebar .overall-progress progress { color-scheme: dark; accent-color: var(--lime); }
+.mobile-overall-progress { display: none; }
 .local-note { display: flex; align-items: center; gap: 8px; padding: 0 8px; color: #91a79a; font-size: 11px; }
 .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #b7d883; box-shadow: 0 0 0 4px rgb(183 216 131 / 10%); }
 .backup-link {
@@ -195,9 +207,7 @@ main { width: min(100%, 1500px); margin: 0 auto; padding: 38px clamp(24px, 4vw, 
 .progress-ring-content { position: relative; z-index: 1; text-align: center; }
 .progress-ring strong { display: block; font-size: 26px; line-height: 1; }
 .progress-ring small { display: block; margin-top: 6px; color: #bacdc0; font-size: 10px; }
-.progress-label { max-width: 90px; }
-.progress-label strong { display: block; font-size: 14px; }
-.progress-label span { display: block; margin-top: 7px; color: #b8cbbf; font-size: 11px; line-height: 1.6; }
+.progress-label { font-size: 14px; }
 
 .today-panel { margin-top: 24px; }
 .today-card { padding: 25px 28px 27px; border: 1px solid #d9dfc7; border-radius: var(--radius-lg); background: #eef1dc; }
@@ -469,10 +479,11 @@ dialog::backdrop { background: rgb(20 40 31 / 48%); backdrop-filter: blur(5px); 
   .mobile-nav .nav-item svg { width: 15px; height: 15px; }
   .mobile-nav .nav-count { display: none; }
   main { padding: 21px 16px 50px; }
-  .overview { min-height: 165px; padding: 26px 23px; border-radius: 21px; }
+  .mobile-overall-progress { display: grid; margin-bottom: 16px; }
+  .overview { min-height: 165px; padding: 26px 23px; border-radius: 21px; gap: 12px; }
   .overview h1 { font-size: 27px; }
-  .overview p { max-width: 75%; font-size: 11px; }
-  .overview-progress { position: absolute; right: 18px; bottom: 20px; }
+  .overview p { font-size: 11px; }
+  .overview-progress { align-self: flex-end; }
   .progress-ring { width: 73px; height: 73px; }
   .progress-ring::after { inset: 6px; }
   .progress-ring strong { font-size: 18px; }
